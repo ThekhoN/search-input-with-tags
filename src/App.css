@@ -1,22 +1,31 @@
-.App {
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  outline: 0;
+  border: 0;
+}
+
+:root {
+  --color-text: #929292;
+  --color-separator: #ccc;
+  --color-active: #08f;
+  --color-active-muted: #a6d7fe;
+  --input-height: 30px;
+  --input-height-small: 28px;
+  --form-border-radius: 3px;
+}
+
+body {
+  font-size: 12px;
   text-align: center;
+  padding: 3.6rem;
+  color: var(--color-text);
 }
+/* required */
 
-.App-logo {
-  height: 40vmin;
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.flex {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-.App-link {
-  color: #09d3ac;
-}
+
