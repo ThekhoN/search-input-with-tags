@@ -39,7 +39,7 @@ class App extends React.Component {
     let updatedSelectedTags = this.state.selectedTags;
     updatedSelectedTags = updatedSelectedTags.filter(
       tagObj => tagObj.value !== tag
-    );
+    ).filter(tagObj => tagObj.value !== "ALL");
     this.setState({
       selectedTags: updatedSelectedTags
     });
@@ -51,6 +51,10 @@ class App extends React.Component {
     });
   };
   render() {
+    const legitSearchTags = this.state.selectedTags.filter((selectedTag) => {
+      return selectedTag.value !== "ALL"
+    })
+
     return (
       <div className="App">
         <MultiSelect
@@ -61,7 +65,7 @@ class App extends React.Component {
         />
         <div className="flex">
           <InputContainer>
-            {this.state.selectedTags.map((tag, index) => (
+            {legitSearchTags.map((tag, index) => (
               <TagInput
                 tagSelectorRef={this.tagSelectorRef}
                 nextTabbableRef={this.nextTabbableRef}

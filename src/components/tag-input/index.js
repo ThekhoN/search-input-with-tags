@@ -2,6 +2,8 @@ import React from "react";
 import styled from "styled-components/macro";
 
 const widthOffset = 100;
+const maxWidth = 300;
+const minWidth = 100;
 
 export default class TagInput extends React.Component {
   state = {
@@ -19,13 +21,26 @@ export default class TagInput extends React.Component {
       editable: true
     });
   };
-  removeTag = () => {
+  removeTag = (e) => {
     this.props.removeTag(this.props.label);
     this.props.nextTabbableRef.current.focus();
   };
   getWidthCalcContent = () => {
     return this.state.inputValue;
   };
+  getUpdatedTagInputWrapperWidth = () => {
+    if (!this.widthCalcRef || !this.widthCalcRef.offsetWidth) {
+      return minWidth
+    }
+    const calculatedWidth = this.widthCalcRef.offsetWidth + widthOffset;
+    if (calculatedWidth > minWidth && calculatedWidth < maxWidth) {
+      return calculatedWidth;
+    } else if (calculatedWidth > maxWidth) {
+      return maxWidth;
+    } else {
+      return minWidth;
+    }
+  }
   render() {
     const getShouldShowInputClass = () => {
       if (this.state.isFocused) {
@@ -44,61 +59,67 @@ export default class TagInput extends React.Component {
     const tagInputWrapperStyle = {
       width: `${this.state.tagInputWrapperWidth}px`
     };
-    // const labelStyle = {
-    //   width: `${this.state.tagInputWrapperWidth - 32}px`
-    // };
     const labelStyle = {};
     return (
-      <TagInputWrapper
-        style={tagInputWrapperStyle}
-        href="#"
-        ref={tagInputWrapper => (this.tagInputWrapper = tagInputWrapper)}
-        data-tag-length={this.props.dataTagLen}
-        data-index={this.props.dataIndex}
-        onFocus={() => {
-          this.setState({
-            isFocused: true
-          });
+      <TagInputOuterWrapper className="flex">
+        <TagInputWrapper
+          style={tagInputWrapperStyle}
+          href="#"
+          ref={tagInputWrapper => (this.tagInputWrapper = tagInputWrapper)}
+          data-tag-length={this.props.dataTagLen}
+          data-index={this.props.dataIndex}
+          onFocus={() => {
+            this.setState({
+              isFocused: true
+            }, () => {
+              // this.inputRef.focus();
+            });
 
-          if (!this.state.inputValue) {
-            this.setState({
-              tagInputWrapperWidth: 200
-            });
-          }
-        }}
-        onBlur={() => {
-          if (!this.state.inputValue) {
-            this.setState({
-              tagInputWrapperWidth: 100,
-              isFocused: false
-            });
-          } else {
-            this.setState({
-              tagInputWrapperWidth: this.widthCalcRef.offsetWidth + widthOffset,
-              isFocused: false
-            });
-          }
-        }}
-        className={`tag-input-wrapper ${isFocusedClass} ${shouldShowInputClass}`}
-        onClick={this.makeEditable}
-      >
-        <label style={labelStyle}>
-          <span>{this.props.label}:</span>
-          <input
-            onChange={e => {
+            if (!this.state.inputValue) {
               this.setState({
-                inputValue: e.target.value
+                tagInputWrapperWidth: 200
               });
-            }}
-            ref={inputRef => (this.inputRef = inputRef)}
-            onBlur={() => {
+            }
+          }}
+          onBlur={() => {
+            if (!this.state.inputValue) {
               this.setState({
-                tagInputWrapperWidth:
-                  this.widthCalcRef.offsetWidth + widthOffset
+                tagInputWrapperWidth: minWidth,
+                isFocused: false
               });
-            }}
-          />
-        </label>
+            } else {
+              this.setState({
+                tagInputWrapperWidth: this.getUpdatedTagInputWrapperWidth(),
+                isFocused: false
+              });
+            }
+          }}
+          className={`tag-input-wrapper ${isFocusedClass} ${shouldShowInputClass}`}
+          onClick={this.makeEditable}
+        >
+          <label style={labelStyle}>
+            <span>{this.props.label}:</span>
+            <input
+              onChange={e => {
+                this.setState({
+                  inputValue: e.target.value
+                });
+              }}
+              ref={inputRef => (this.inputRef = inputRef)}
+              onBlur={() => {
+                this.setState({
+                  tagInputWrapperWidth: this.getUpdatedTagInputWrapperWidth()
+                });
+              }}
+            />
+          </label>
+
+          <WidthCalcContentWrapper
+            ref={widthCalcRef => (this.widthCalcRef = widthCalcRef)}
+          >
+            {this.getWidthCalcContent()}
+          </WidthCalcContentWrapper>
+        </TagInputWrapper>
         <button
           onClick={this.removeTag}
           ref={btnRef => (this.btnRef = btnRef)}
@@ -109,13 +130,8 @@ export default class TagInput extends React.Component {
           }}
         >
           ×
-        </button>
-        <WidthCalcContentWrapper
-          ref={widthCalcRef => (this.widthCalcRef = widthCalcRef)}
-        >
-          {this.getWidthCalcContent()}
-        </WidthCalcContentWrapper>
-      </TagInputWrapper>
+     </button>
+      </TagInputOuterWrapper>
     );
   }
 }
@@ -128,12 +144,16 @@ const WidthCalcContentWrapper = styled.span`
   left: -9999px;
 `;
 
+const TagInputOuterWrapper = styled.div`
+  display: flex;
+  margin-right: 0.3rem;
+`
+
 const TagInputWrapper = styled.a`
   text-decoration: none;
   background: #f2f2f2;
   transition: width 0.3s ease;
   display: flex;
-  margin-right: 0.3rem;
   height: var(--input-height);
   align-items: center;
   border-radius: var(--form-border-radius);
@@ -144,7 +164,7 @@ const TagInputWrapper = styled.a`
     border: 1px solid var(--color-active-muted);
   }
 
-  & button {
+  & + button {
     margin-left: auto;
     margin-right: 0;
     height: var(--input-height);
@@ -153,7 +173,7 @@ const TagInputWrapper = styled.a`
     border: 1px solid var(--color-separator);
   }
 
-  & button:focus {
+  & + button:focus {
     box-shadow: 0 0 4px var(--color-active-muted);
     border: 1px solid var(--color-active-muted);
   }
@@ -162,7 +182,8 @@ const TagInputWrapper = styled.a`
     display: flex;
     align-items: center;
     transition: width 0.3s ease;
-    width: calc(100% - 30px);
+    // width: calc(100% - 30px);
+    width: 100%;
 
     span {
       padding-left: 10px;

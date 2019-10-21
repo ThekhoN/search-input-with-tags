@@ -11,13 +11,13 @@ export default class MultiSelect extends React.Component {
     const sortedNextPropsDefaultSelected = this.props.defaultSelected.sort(
       (a, b) => a.value - b.value
     );
-    const sortedPrevStateAllSelected = prevState.allSelected.sort(
+    const sortedStateAllSelected = this.state.allSelected.sort(
       (a, b) => a.value - b.value
     );
 
     if (
       JSON.stringify(sortedNextPropsDefaultSelected) !==
-      JSON.stringify(sortedPrevStateAllSelected)
+      JSON.stringify(sortedStateAllSelected)
     ) {
       this.setState({
         allSelected: sortedNextPropsDefaultSelected
@@ -26,24 +26,35 @@ export default class MultiSelect extends React.Component {
   }
   updateSelection = valueObj => {
     const { allSelected } = this.state;
+    const { data } = this.props;
     let updatedAllSelected = [...allSelected];
+    const selectedValues = this.state.allSelected.map(item => item.value);
+    const allSelectedValues = data.reduce(function (acc, item) {
+      return acc.concat({ value: item.value });
+    }, []);
+    const allSelectedValuesSansAll = allSelectedValues.filter(item => item.value !== "ALL")
     if (valueObj.value === "ALL") {
-      //   debugger;
-      const { data } = this.props;
-      const allSelectedValues = data.reduce(function(acc, item) {
-        return acc.concat({ value: item.value });
-      }, []);
-      if (allSelected.length === data.length) {
-        updatedAllSelected = [];
-      } else {
+      if (selectedValues.indexOf("ALL") === -1 || allSelectedValuesSansAll.length === this.props.data.length - 1) {
+        debugger;
         updatedAllSelected = [...allSelectedValues];
+      } else {
+        updatedAllSelected = [];
       }
     } else {
-      updatedAllSelected = removeObjIfDuplicateElseConcat(
-        allSelected,
-        valueObj,
-        "value"
-      );
+      if (allSelectedValuesSansAll.length === this.props.data.length - 1) {
+        updatedAllSelected = removeObjIfDuplicateElseConcat(
+          allSelected,
+          valueObj,
+          "value"
+        );
+      } else {
+        updatedAllSelected = removeObjIfDuplicateElseConcat(
+          allSelected,
+          valueObj,
+          "value"
+        ).filter(item => item.value !== "ALL")
+      }
+
     }
     this.setState(
       {
@@ -57,7 +68,7 @@ export default class MultiSelect extends React.Component {
   checkIsSelected = value => {
     const selectedValues = this.state.allSelected.map(item => item.value);
     if (value === "ALL") {
-      debugger;
+      // debugger;
       if (
         selectedValues.length === this.props.data.length - 1 ||
         selectedValues.indexOf(value) > -1
