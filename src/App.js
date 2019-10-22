@@ -5,6 +5,9 @@ import InputContainer from "./components/input-container";
 import MultiSelect from "./components/multi-select";
 import styled from "styled-components/macro";
 
+const KEY = "value";
+const DEFAULT_TAG_INPUT_WIDTH = 100;
+
 // 🤷 Shrug ¯\_(ツ)_/¯
 // const data = [
 //   {
@@ -55,7 +58,8 @@ const data = [
 class App extends React.Component {
   state = {
     selectedTags: [data[1]],
-    tagInputValueData: {}
+    tagInputValueData: {},
+    tagInputWidthData: {}
   };
   tagSelectorRef = React.createRef();
   nextTabbableRef = React.createRef();
@@ -65,21 +69,54 @@ class App extends React.Component {
       .filter(tagObj => tagObj.value !== tag)
       .filter(tagObj => tagObj.value !== "ALL");
 
-    // update input values
-    let updatedTagInputValueData = {};
-    const { tagInputValueData } = this.state;
-    for (let key in tagInputValueData) {
-      if (key !== tag) {
-        updatedTagInputValueData[key] = tagInputValueData[key];
-      }
-    }
+    // tagInputValue
+    let updatedTagInputValueData = this.state.tagInputValueData;
+    updatedTagInputValueData[tag] = "";
+
+    // width
+    let updatedTagInputWidthData = this.state.tagInputWidthData;
+    updatedTagInputWidthData[tag] = DEFAULT_TAG_INPUT_WIDTH;
 
     this.setState({
       selectedTags: updatedSelectedTags,
       tagInputValueData: updatedTagInputValueData
     });
   };
+  onTagInputWidthChange = ({ key, width }) => {
+    let updatedTagInputWidthData = this.state.tagInputWidthData;
+    updatedTagInputWidthData[key] = width;
+    this.setState({
+      tagInputWidthData: updatedTagInputWidthData
+    });
+  };
   onChangeTagSelection = selectedTags => {
+    const sortedSelectedTagValues = selectedTags.map(item => item[KEY]).sort();
+    const sortedStateSelectedTagValues = this.state.selectedTags
+      .map(item => item[KEY])
+      .sort();
+
+    // update tagInputWidth and tagInputValue on de-selection
+    if (sortedSelectedTagValues.length < sortedStateSelectedTagValues.length) {
+      // difference
+      const unselectedTag = sortedStateSelectedTagValues.filter(
+        item => !sortedSelectedTagValues.includes(item)
+      )[0];
+
+      // tagInputValue
+      let updatedTagInputValueData = this.state.tagInputValueData;
+      updatedTagInputValueData[unselectedTag] = "";
+
+      // width
+      let updatedTagInputWidthData = this.state.tagInputWidthData;
+      updatedTagInputWidthData[unselectedTag] = DEFAULT_TAG_INPUT_WIDTH;
+
+      // update
+      this.setState({
+        tagInputValueData: updatedTagInputValueData,
+        tagInputWidthData: updatedTagInputWidthData
+      });
+    }
+
     this.setState({
       selectedTags
     });
@@ -91,8 +128,14 @@ class App extends React.Component {
       return this.state.tagInputValueData[tag];
     }
   };
+  getTagInputWidth = tag => {
+    if (!this.state.tagInputWidthData[tag]) {
+      return DEFAULT_TAG_INPUT_WIDTH;
+    } else {
+      return this.state.tagInputWidthData[tag];
+    }
+  };
   onTagInputValueChange = ({ key, value }) => {
-    // debugger;
     let updatedTagInputValueData = this.state.tagInputValueData;
     updatedTagInputValueData[key] = value;
     this.setState({
@@ -117,6 +160,9 @@ class App extends React.Component {
             {legitSearchTags.map((tag, index) => {
               return (
                 <TagInput
+                  onTagInputWidthChange={this.onTagInputWidthChange}
+                  tagInputWidthData={this.state.tagInputWidthData}
+                  tagInputWidth={this.getTagInputWidth(tag.value)}
                   tagInputValue={this.getTagInputValue(tag.value)}
                   onTagInputValueChange={this.onTagInputValueChange}
                   tagSelectorRef={this.tagSelectorRef}

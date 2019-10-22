@@ -1,5 +1,5 @@
 import React from "react";
-import { removeObjIfDuplicateElseConcat } from "./utils";
+import { removeObjIfDuplicateElseConcat } from "../../utils";
 import SelectListUnit from "./select-list-unit";
 import styled from "styled-components/macro";
 
