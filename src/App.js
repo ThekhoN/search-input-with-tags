@@ -167,7 +167,7 @@ export default class MultiFilterSearchWithInputTags extends React.Component {
           onChangeSelection={this.onChangeTagSelection}
           ref={this.tagSelectorRef}
         />
-        <div className="flex">
+        <div className="flex" style={{ marginTop: "1rem" }}>
           <InputContainerWrapper>
             {legitSearchTags.map((tag, index) => {
               return (

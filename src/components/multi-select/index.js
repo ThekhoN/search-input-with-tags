@@ -6,7 +6,8 @@ import { KEY } from "../../App";
 
 export default class MultiSelect extends React.Component {
   state = {
-    allSelected: this.props.defaultSelected
+    allSelected: this.props.defaultSelected,
+    isOpen: false
   };
   componentDidUpdate() {
     const sortedNextPropsDefaultSelected = this.props.defaultSelected.sort(
@@ -112,7 +113,7 @@ export default class MultiSelect extends React.Component {
       }
     }
   };
-  render() {
+  renderDropdownList = () => {
     const { data } = this.props;
     const { allSelected } = this.state;
     return (
@@ -137,16 +138,108 @@ export default class MultiSelect extends React.Component {
         })}
       </MultiSelectWrapper>
     );
+  };
+  toggleIsOpen = () => {
+    this.setState({
+      isOpen: !this.state.isOpen
+    });
+  };
+  renderSelected = () => {
+    const { isOpen, allSelected } = this.state;
+    const { data } = this.props;
+    let labelContent = "";
+    if (!allSelected.length) {
+      labelContent = "None Selected";
+    } else if (allSelected.length === data.length) {
+      labelContent = "All Selected";
+    } else if (allSelected.length === 1) {
+      const selectedOne = allSelected[0][KEY];
+      labelContent = selectedOne;
+    } else {
+      labelContent = `${allSelected.length} Selected`;
+    }
+    const activeClass = isOpen ? "-is-open" : "";
+    return (
+      <MultiSelectWrapperDropdownBtn
+        className={`${activeClass}`}
+        onClick={this.toggleIsOpen}
+      >
+        <span>{labelContent}</span>
+        <DropDownIcon>▼</DropDownIcon>
+      </MultiSelectWrapperDropdownBtn>
+    );
+  };
+  // handle click outside ~ to close the dropdown
+  componentWillMount() {
+    document.addEventListener("mousedown", this.handleDocClick, false);
+  }
+  componentWillUnmount() {
+    document.removeEventListener("mousedown", this.handleDocClick, false);
+  }
+  handleDocClick = e => {
+    if (!this.wrapper.contains(e.target)) {
+      this.setState({
+        isOpen: false
+      });
+    }
+  };
+  render() {
+    return (
+      <MultiSelectWrapperDropdownlistWrapper
+        ref={wrapper => (this.wrapper = wrapper)}
+      >
+        {this.renderSelected()}
+        {this.state.isOpen && this.renderDropdownList()}
+      </MultiSelectWrapperDropdownlistWrapper>
+    );
   }
 }
 
+const MultiSelectWrapperDropdownBtn = styled.button`
+  color: inherit;
+  position: relative;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  width: 200px;
+  font-size: 12px;
+  height: 30px;
+  text-align: left;
+  padding-left: 5px;
+  cursor: pointer;
+  font-family: inherit;
+
+  &:focus {
+    box-shadow: 0 0 4px var(--color-active-muted);
+    border: 1px solid var(--color-active-muted);
+  }
+`;
+
+const DropDownIcon = styled.span`
+  position: absolute;
+  width: 30px;
+  height: 29px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 0;
+  right: 0;
+`;
+
+const MultiSelectWrapperDropdownlistWrapper = styled.div`
+  width: 200px;
+  position: relative;
+  z-index: 1;
+`;
+
 const MultiSelectWrapper = styled.ul`
-  padding: 1rem;
   max-width: 320px;
   text-align: left;
   border: 1px dashed #ccc;
   list-style: none;
-  margin-bottom: 1rem;
+  max-width: 200px;
+  width: 100%;
+  background: white;
+  position: absolute;
 
   &:focus {
     box-shadow: 0 0 4px var(--color-active-muted);

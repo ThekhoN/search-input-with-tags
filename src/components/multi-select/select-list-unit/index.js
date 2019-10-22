@@ -36,7 +36,7 @@ export default class SelectListUnit extends React.Component {
 }
 
 const SelectListUnitWrapper = styled.li`
-  margin-bottom: 0.6rem;
+  /* margin-bottom: 0.6rem; */
   position: relative;
   padding-left: 22px;
   padding-top: 0.3rem;
