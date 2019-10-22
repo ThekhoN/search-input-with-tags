@@ -55,7 +55,7 @@ const data = [
 class App extends React.Component {
   state = {
     selectedTags: [data[1]],
-    tagInputValueData: null
+    tagInputValueData: {}
   };
   tagSelectorRef = React.createRef();
   nextTabbableRef = React.createRef();
@@ -64,8 +64,19 @@ class App extends React.Component {
     updatedSelectedTags = updatedSelectedTags
       .filter(tagObj => tagObj.value !== tag)
       .filter(tagObj => tagObj.value !== "ALL");
+
+    // update input values
+    let updatedTagInputValueData = {};
+    const { tagInputValueData } = this.state;
+    for (let key in tagInputValueData) {
+      if (key !== tag) {
+        updatedTagInputValueData[key] = tagInputValueData[key];
+      }
+    }
+
     this.setState({
-      selectedTags: updatedSelectedTags
+      selectedTags: updatedSelectedTags,
+      tagInputValueData: updatedTagInputValueData
     });
   };
   onChangeTagSelection = selectedTags => {
@@ -74,10 +85,7 @@ class App extends React.Component {
     });
   };
   getTagInputValue = tag => {
-    if (
-      this.state.tagInputValueData === null ||
-      !this.state.tagInputValueData[tag]
-    ) {
+    if (!this.state.tagInputValueData[tag]) {
       return "";
     } else {
       return this.state.tagInputValueData[tag];
@@ -86,9 +94,6 @@ class App extends React.Component {
   onTagInputValueChange = ({ key, value }) => {
     // debugger;
     let updatedTagInputValueData = this.state.tagInputValueData;
-    if (updatedTagInputValueData === null) {
-      updatedTagInputValueData = {};
-    }
     updatedTagInputValueData[key] = value;
     this.setState({
       tagInputValueData: updatedTagInputValueData

@@ -9,8 +9,7 @@ export default class TagInput extends React.Component {
   state = {
     editable: false,
     isFocused: false,
-    tagInputWrapperWidth: 100,
-    inputValue: this.props.tagInputValue
+    tagInputWrapperWidth: 100
   };
   makeEditable = e => {
     e.preventDefault();
@@ -26,13 +25,14 @@ export default class TagInput extends React.Component {
     this.props.nextTabbableRef.current.focus();
   };
   getWidthCalcContent = () => {
-    return this.state.inputValue;
+    return this.props.tagInputValue;
   };
   getUpdatedTagInputWrapperWidth = () => {
     if (!this.widthCalcRef || !this.widthCalcRef.offsetWidth) {
       return minWidth;
     }
     const calculatedWidth = this.widthCalcRef.offsetWidth + widthOffset;
+    console.log("calculatedWidth: ", calculatedWidth);
     if (calculatedWidth > minWidth && calculatedWidth < maxWidth) {
       return calculatedWidth;
     } else if (calculatedWidth > maxWidth) {
@@ -45,7 +45,10 @@ export default class TagInput extends React.Component {
     const getShouldShowInputClass = () => {
       if (this.state.isFocused) {
         return true;
-      } else if (this.inputRef && this.inputRef.value) {
+      } else if (
+        (this.inputRef && this.inputRef.value) ||
+        this.props.tagInputValue
+      ) {
         return true;
       } else {
         return false;
@@ -78,14 +81,14 @@ export default class TagInput extends React.Component {
               }
             );
 
-            if (!this.state.inputValue) {
+            if (!this.props.tagInputValue) {
               this.setState({
                 tagInputWrapperWidth: 200
               });
             }
           }}
           onBlur={() => {
-            if (!this.state.inputValue) {
+            if (!this.props.tagInputValue) {
               this.setState({
                 tagInputWrapperWidth: minWidth,
                 isFocused: false
@@ -105,17 +108,10 @@ export default class TagInput extends React.Component {
             <input
               value={this.props.tagInputValue}
               onChange={e => {
-                this.setState(
-                  {
-                    inputValue: e.target.value
-                  },
-                  () => {
-                    this.props.onTagInputValueChange({
-                      key: this.props.label,
-                      value: this.state.inputValue
-                    });
-                  }
-                );
+                this.props.onTagInputValueChange({
+                  key: this.props.label,
+                  value: e.target.value
+                });
               }}
               ref={inputRef => (this.inputRef = inputRef)}
               onBlur={() => {

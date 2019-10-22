@@ -15,7 +15,7 @@ const InputContainerWrapper = styled.div`
   display: flex;
   border: 1px solid var(--color-separator);
   padding: 1rem;
-  width: 980px;
+  min-width: 980px;
   border-radius: var(--form-border-radius);
   height: 38px;
   align-items: center;
