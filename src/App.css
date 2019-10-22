@@ -17,13 +17,13 @@
 }
 
 body {
+  font-family: 'Courier New', Courier, monospace;
   font-size: 12px;
   text-align: center;
   padding: 3.6rem;
   color: var(--color-text);
 }
 /* required */
-
 .flex {
   display: flex;
 }

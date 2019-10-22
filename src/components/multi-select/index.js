@@ -2,6 +2,7 @@ import React from "react";
 import { removeObjIfDuplicateElseConcat } from "../../utils";
 import SelectListUnit from "./select-list-unit";
 import styled from "styled-components/macro";
+import { KEY } from "../../App";
 
 export default class MultiSelect extends React.Component {
   state = {
@@ -9,10 +10,10 @@ export default class MultiSelect extends React.Component {
   };
   componentDidUpdate() {
     const sortedNextPropsDefaultSelected = this.props.defaultSelected.sort(
-      (a, b) => a.value - b.value
+      (a, b) => a[KEY] - b[KEY]
     );
     const sortedStateAllSelected = this.state.allSelected.sort(
-      (a, b) => a.value - b.value
+      (a, b) => a[KEY] - b[KEY]
     );
 
     if (
@@ -28,16 +29,16 @@ export default class MultiSelect extends React.Component {
     const { allSelected } = this.state;
     const { data } = this.props;
     let updatedAllSelected = [...allSelected];
-    const selectedValues = this.state.allSelected.map(item => item.value);
+    const selectedValues = this.state.allSelected.map(item => item[KEY]);
     const allSelectedValues = data.reduce(function(acc, item) {
-      return acc.concat({ value: item.value });
+      return acc.concat({ [KEY]: item[KEY] });
     }, []);
     const allSelectedValuesSortedSansAll = data
-      .filter(item => item.value !== "ALL")
-      .map(item => item.value)
+      .filter(item => item[KEY] !== "ALL")
+      .map(item => item[KEY])
       .sort();
 
-    if (valueObj.value === "ALL") {
+    if (valueObj[KEY] === "ALL") {
       if (selectedValues.indexOf("ALL") === -1) {
         updatedAllSelected = allSelectedValues;
       } else {
@@ -50,19 +51,19 @@ export default class MultiSelect extends React.Component {
       updatedAllSelected = removeObjIfDuplicateElseConcat(
         allSelected,
         valueObj,
-        "value"
+        [KEY]
       );
 
       // removed item
       if (updatedAllSelected.length < allSelected.length) {
         // remove "ALL"
         updatedAllSelected = updatedAllSelected.filter(
-          item => item.value !== "ALL"
+          item => item[KEY] !== "ALL"
         );
       }
 
       const updatedAllSelectedValuesSorted = updatedAllSelected
-        .map(item => item.value)
+        .map(item => item[KEY])
         .sort();
 
       // compare if all items(other than "ALL") are selected
@@ -76,7 +77,7 @@ export default class MultiSelect extends React.Component {
 
     // sort
     updatedAllSelected = updatedAllSelected.sort((a, b) => {
-      if (a.value.toString() > b.value.toString()) {
+      if (a[KEY].toString() > b[KEY].toString()) {
         return 1;
       } else {
         return -1;
@@ -93,7 +94,7 @@ export default class MultiSelect extends React.Component {
     );
   };
   checkIsSelected = value => {
-    const selectedValues = this.state.allSelected.map(item => item.value);
+    const selectedValues = this.state.allSelected.map(item => item[KEY]);
     if (value === "ALL") {
       if (
         selectedValues.length === this.props.data.length - 1 ||
@@ -123,14 +124,14 @@ export default class MultiSelect extends React.Component {
         {data.map((item, index) => {
           return (
             <SelectListUnit
-              isSelected={this.checkIsSelected(item.value)}
+              isSelected={this.checkIsSelected(item[KEY])}
               dataLen={this.props.data.length}
               key={index}
               updateAllSelected={this.updateAllSelected}
               allSelected={allSelected}
               updateSelection={this.updateSelection}
-              value={item.value}
-              label={item.label}
+              value={item[KEY]}
+              label={item[KEY]}
             />
           );
         })}

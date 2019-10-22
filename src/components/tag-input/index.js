@@ -67,7 +67,6 @@ export default class TagInput extends React.Component {
     const tagInputWrapperStyle = {
       width: `${this.props.tagInputWidth}px`
     };
-    const labelStyle = {};
     return (
       <TagInputOuterWrapper className="flex">
         <TagInputWrapper
@@ -103,7 +102,7 @@ export default class TagInput extends React.Component {
           className={`tag-input-wrapper ${isFocusedClass} ${shouldShowInputClass}`}
           onClick={this.makeEditable}
         >
-          <label style={labelStyle}>
+          <label>
             <span ref={labelSpanRef => (this.labelSpanRef = labelSpanRef)}>
               {this.props.label}:
             </span>
