@@ -10,7 +10,7 @@ export default class TagInput extends React.Component {
     editable: false,
     isFocused: false,
     tagInputWrapperWidth: 100,
-    inputValue: ""
+    inputValue: this.props.tagInputValue
   };
   makeEditable = e => {
     e.preventDefault();
@@ -21,7 +21,7 @@ export default class TagInput extends React.Component {
       editable: true
     });
   };
-  removeTag = (e) => {
+  removeTag = () => {
     this.props.removeTag(this.props.label);
     this.props.nextTabbableRef.current.focus();
   };
@@ -30,7 +30,7 @@ export default class TagInput extends React.Component {
   };
   getUpdatedTagInputWrapperWidth = () => {
     if (!this.widthCalcRef || !this.widthCalcRef.offsetWidth) {
-      return minWidth
+      return minWidth;
     }
     const calculatedWidth = this.widthCalcRef.offsetWidth + widthOffset;
     if (calculatedWidth > minWidth && calculatedWidth < maxWidth) {
@@ -40,7 +40,7 @@ export default class TagInput extends React.Component {
     } else {
       return minWidth;
     }
-  }
+  };
   render() {
     const getShouldShowInputClass = () => {
       if (this.state.isFocused) {
@@ -69,11 +69,14 @@ export default class TagInput extends React.Component {
           data-tag-length={this.props.dataTagLen}
           data-index={this.props.dataIndex}
           onFocus={() => {
-            this.setState({
-              isFocused: true
-            }, () => {
-              // this.inputRef.focus();
-            });
+            this.setState(
+              {
+                isFocused: true
+              },
+              () => {
+                // this.inputRef.focus();
+              }
+            );
 
             if (!this.state.inputValue) {
               this.setState({
@@ -100,10 +103,19 @@ export default class TagInput extends React.Component {
           <label style={labelStyle}>
             <span>{this.props.label}:</span>
             <input
+              value={this.props.tagInputValue}
               onChange={e => {
-                this.setState({
-                  inputValue: e.target.value
-                });
+                this.setState(
+                  {
+                    inputValue: e.target.value
+                  },
+                  () => {
+                    this.props.onTagInputValueChange({
+                      key: this.props.label,
+                      value: this.state.inputValue
+                    });
+                  }
+                );
               }}
               ref={inputRef => (this.inputRef = inputRef)}
               onBlur={() => {
@@ -130,7 +142,7 @@ export default class TagInput extends React.Component {
           }}
         >
           ×
-     </button>
+        </button>
       </TagInputOuterWrapper>
     );
   }
@@ -147,7 +159,7 @@ const WidthCalcContentWrapper = styled.span`
 const TagInputOuterWrapper = styled.div`
   display: flex;
   margin-right: 0.3rem;
-`
+`;
 
 const TagInputWrapper = styled.a`
   text-decoration: none;

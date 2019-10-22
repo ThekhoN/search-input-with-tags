@@ -5,55 +5,99 @@ import InputContainer from "./components/input-container";
 import MultiSelect from "./components/multi-select";
 import styled from "styled-components/macro";
 
+// 🤷 Shrug ¯\_(ツ)_/¯
+// const data = [
+//   {
+//     value: "ALL",
+//     label: "ALL"
+//   },
+//   {
+//     value: "ID",
+//     label: "ID"
+//   },
+//   {
+//     value: "Track",
+//     label: "Track"
+//   },
+//   {
+//     value: "Artist",
+//     label: "Artist"
+//   },
+//   {
+//     value: "Author",
+//     label: "Author"
+//   }
+// ];
+
 const data = [
   {
     value: "ALL",
     label: "ALL"
   },
   {
-    value: "ID",
-    label: "ID"
+    value: "Id",
+    label: "Id"
   },
   {
-    value: "Track",
-    label: "Track"
-  },
-  {
-    value: "Artist",
-    label: "Artist"
+    value: "Title",
+    label: "Title"
   },
   {
     value: "Author",
     label: "Author"
+  },
+  {
+    value: "Publisher",
+    label: "Publisher"
   }
 ];
 
 class App extends React.Component {
   state = {
-    selectedTags: [data[1]]
+    selectedTags: [data[1]],
+    tagInputValueData: null
   };
   tagSelectorRef = React.createRef();
   nextTabbableRef = React.createRef();
   removeTag = tag => {
-    console.log(this.state);
     let updatedSelectedTags = this.state.selectedTags;
-    updatedSelectedTags = updatedSelectedTags.filter(
-      tagObj => tagObj.value !== tag
-    ).filter(tagObj => tagObj.value !== "ALL");
+    updatedSelectedTags = updatedSelectedTags
+      .filter(tagObj => tagObj.value !== tag)
+      .filter(tagObj => tagObj.value !== "ALL");
     this.setState({
       selectedTags: updatedSelectedTags
     });
-    // debugger;
   };
   onChangeTagSelection = selectedTags => {
     this.setState({
       selectedTags
     });
   };
+  getTagInputValue = tag => {
+    if (
+      this.state.tagInputValueData === null ||
+      !this.state.tagInputValueData[tag]
+    ) {
+      return "";
+    } else {
+      return this.state.tagInputValueData[tag];
+    }
+  };
+  onTagInputValueChange = ({ key, value }) => {
+    // debugger;
+    let updatedTagInputValueData = this.state.tagInputValueData;
+    if (updatedTagInputValueData === null) {
+      updatedTagInputValueData = {};
+    }
+    updatedTagInputValueData[key] = value;
+    this.setState({
+      tagInputValueData: updatedTagInputValueData
+    });
+  };
   render() {
-    const legitSearchTags = this.state.selectedTags.filter((selectedTag) => {
-      return selectedTag.value !== "ALL"
-    })
+    const legitSearchTags = this.state.selectedTags.filter(selectedTag => {
+      return selectedTag.value !== "ALL";
+    });
 
     return (
       <div className="App">
@@ -65,17 +109,21 @@ class App extends React.Component {
         />
         <div className="flex">
           <InputContainer>
-            {legitSearchTags.map((tag, index) => (
-              <TagInput
-                tagSelectorRef={this.tagSelectorRef}
-                nextTabbableRef={this.nextTabbableRef}
-                dataTagLen={this.state.selectedTags.length}
-                dataIndex={index}
-                key={index}
-                label={tag.value}
-                removeTag={this.removeTag}
-              />
-            ))}
+            {legitSearchTags.map((tag, index) => {
+              return (
+                <TagInput
+                  tagInputValue={this.getTagInputValue(tag.value)}
+                  onTagInputValueChange={this.onTagInputValueChange}
+                  tagSelectorRef={this.tagSelectorRef}
+                  nextTabbableRef={this.nextTabbableRef}
+                  dataTagLen={this.state.selectedTags.length}
+                  dataIndex={index}
+                  key={index}
+                  label={tag.value}
+                  removeTag={this.removeTag}
+                />
+              );
+            })}
           </InputContainer>
           <FetchButton ref={this.nextTabbableRef} className="fetch-button">
             Fetch
@@ -87,15 +135,16 @@ class App extends React.Component {
 }
 
 const FetchButton = styled.button`
-  border: 1px solid #ccc;
+  border: 1px solid var(--color-active);
   height: 38px;
   padding: 0 2rem;
   border-radius: var(--form-border-radius);
   margin-left: 10px;
-  background: var(--color-separator);
+  color: var(--color-active);
 
   &:focus {
-    outline: 1px solid orange;
+    box-shadow: 0 0 4px var(--color-active-muted);
+    border: 1px solid var(--color-active-muted);
   }
 `;
 

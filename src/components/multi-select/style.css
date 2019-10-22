@@ -11,33 +11,3 @@ ul[tabindex="0"]:focus {
     margin-bottom: 1rem;
   }
   
-  li.custom-list-box__option {
-    margin-bottom: 0.6rem;
-    position: relative;
-    padding-left: 22px;
-  }
-  li.custom-list-box__option:focus {
-    outline: 1px solid orange;
-  }
-  li.custom-list-box__option:after {
-    content: "";
-    display: block;
-    width: 10px;
-    height: 10px;
-    border: 1px solid rgba(0, 0, 0, 0.25);
-    border-radius: 2px;
-    position: absolute;
-    left: 3px;
-    top: 3px;
-  }
-  li.custom-list-box__option.isSelected:after {
-    content: "";
-    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAQAAAADpb+tAAAAaElEQVR4Xl3PIQoCQQCF4Y8JW42D1bDZ4iVEjDbxFpstYhC7eIVBZHkXFGw734sv/TqDQQ8Xb1udja/I8igeIm7Aygj2IpoKTGZnVRNxAHYi4iPiDlA9xX+aNQDFySziqDN6uSp6y7ofEMwZ05uUZRkAAAAASUVORK5CYII=);
-    background-size: 100% 100%;
-    display: block;
-    width: 8px;
-    height: 8px;
-    position: absolute;
-    left: 5px;
-    top: 5px;
-  }

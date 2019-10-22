@@ -1,13 +1,13 @@
 import React from "react";
 import { removeObjIfDuplicateElseConcat } from "./utils";
 import SelectListUnit from "./select-list-unit";
-import "./style.css";
+import styled from "styled-components/macro";
 
 export default class MultiSelect extends React.Component {
   state = {
     allSelected: this.props.defaultSelected
   };
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate() {
     const sortedNextPropsDefaultSelected = this.props.defaultSelected.sort(
       (a, b) => a.value - b.value
     );
@@ -29,33 +29,60 @@ export default class MultiSelect extends React.Component {
     const { data } = this.props;
     let updatedAllSelected = [...allSelected];
     const selectedValues = this.state.allSelected.map(item => item.value);
-    const allSelectedValues = data.reduce(function (acc, item) {
+    const allSelectedValues = data.reduce(function(acc, item) {
       return acc.concat({ value: item.value });
     }, []);
-    const allSelectedValuesSansAll = allSelectedValues.filter(item => item.value !== "ALL")
+    const allSelectedValuesSortedSansAll = data
+      .filter(item => item.value !== "ALL")
+      .map(item => item.value)
+      .sort();
+
     if (valueObj.value === "ALL") {
-      if (selectedValues.indexOf("ALL") === -1 || allSelectedValuesSansAll.length === this.props.data.length - 1) {
-        debugger;
-        updatedAllSelected = [...allSelectedValues];
+      if (selectedValues.indexOf("ALL") === -1) {
+        updatedAllSelected = allSelectedValues;
       } else {
         updatedAllSelected = [];
       }
     } else {
-      if (allSelectedValuesSansAll.length === this.props.data.length - 1) {
-        updatedAllSelected = removeObjIfDuplicateElseConcat(
-          allSelected,
-          valueObj,
-          "value"
+      // toggle
+      // remove if already selected
+      // else add
+      updatedAllSelected = removeObjIfDuplicateElseConcat(
+        allSelected,
+        valueObj,
+        "value"
+      );
+
+      // removed item
+      if (updatedAllSelected.length < allSelected.length) {
+        // remove "ALL"
+        updatedAllSelected = updatedAllSelected.filter(
+          item => item.value !== "ALL"
         );
-      } else {
-        updatedAllSelected = removeObjIfDuplicateElseConcat(
-          allSelected,
-          valueObj,
-          "value"
-        ).filter(item => item.value !== "ALL")
       }
 
+      const updatedAllSelectedValuesSorted = updatedAllSelected
+        .map(item => item.value)
+        .sort();
+
+      // compare if all items(other than "ALL") are selected
+      if (
+        JSON.stringify(allSelectedValuesSortedSansAll) ===
+        JSON.stringify(updatedAllSelectedValuesSorted)
+      ) {
+        updatedAllSelected = allSelectedValues;
+      }
     }
+
+    // sort
+    updatedAllSelected = updatedAllSelected.sort((a, b) => {
+      if (a.value.toString() > b.value.toString()) {
+        return 1;
+      } else {
+        return -1;
+      }
+    });
+
     this.setState(
       {
         allSelected: updatedAllSelected
@@ -68,7 +95,6 @@ export default class MultiSelect extends React.Component {
   checkIsSelected = value => {
     const selectedValues = this.state.allSelected.map(item => item.value);
     if (value === "ALL") {
-      // debugger;
       if (
         selectedValues.length === this.props.data.length - 1 ||
         selectedValues.indexOf(value) > -1
@@ -89,8 +115,7 @@ export default class MultiSelect extends React.Component {
     const { data } = this.props;
     const { allSelected } = this.state;
     return (
-      <ul
-        className="custom-list-box"
+      <MultiSelectWrapper
         role="listbox"
         tabIndex="0"
         aria-label="React Multi-select Widget"
@@ -109,7 +134,21 @@ export default class MultiSelect extends React.Component {
             />
           );
         })}
-      </ul>
+      </MultiSelectWrapper>
     );
   }
 }
+
+const MultiSelectWrapper = styled.ul`
+  padding: 1rem;
+  max-width: 320px;
+  text-align: left;
+  border: 1px dashed #ccc;
+  list-style: none;
+  margin-bottom: 1rem;
+
+  &:focus {
+    box-shadow: 0 0 4px var(--color-active-muted);
+    border: 1px solid var(--color-active-muted);
+  }
+`;
