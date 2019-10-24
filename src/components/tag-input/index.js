@@ -1,9 +1,9 @@
 import React from "react";
 import styled from "styled-components/macro";
+import { DEFAULT_TAG_INPUT_WIDTH as minWidth } from "../../App";
 
 const widthOffset = 20;
 const maxWidth = 300;
-const minWidth = 100;
 
 export default class TagInput extends React.Component {
   state = {
@@ -167,7 +167,7 @@ const TagInputWrapper = styled.a`
   height: var(--input-height);
   align-items: center;
   border-radius: var(--form-border-radius);
-  min-width: 130px;
+  min-width: 160px;
 
   &.is-focused {
     box-shadow: 0 0 4px var(--color-active-muted);
@@ -198,6 +198,7 @@ const TagInputWrapper = styled.a`
     span {
       padding-left: 10px;
       padding-right: 10px;
+      white-space: nowrap;
       color: var(--color-active);
     }
   }

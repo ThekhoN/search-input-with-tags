@@ -5,54 +5,49 @@ import MultiSelect from "./components/multi-select";
 import styled from "styled-components/macro";
 
 export const KEY = "value";
-const DEFAULT_TAG_INPUT_WIDTH = 100;
+export const DEFAULT_TAG_INPUT_WIDTH = 160;
 
 // 🤷 Shrug ¯\_(ツ)_/¯
+const data = [
+  {
+    value: "ALL"
+  },
+  {
+    value: "Adam ID"
+  },
+  {
+    value: "Track"
+  },
+  {
+    value: "Artist"
+  },
+  {
+    value: "Author/Composer"
+  }
+];
+
 // const data = [
 //   {
 //     value: "ALL",
 //     label: "ALL"
 //   },
 //   {
-//     value: "ID",
-//     label: "ID"
+//     value: "Id",
+//     label: "Id"
 //   },
 //   {
-//     value: "Track",
-//     label: "Track"
-//   },
-//   {
-//     value: "Artist",
-//     label: "Artist"
+//     value: "Title",
+//     label: "Title"
 //   },
 //   {
 //     value: "Author",
 //     label: "Author"
+//   },
+//   {
+//     value: "Publisher",
+//     label: "Publisher"
 //   }
 // ];
-
-const data = [
-  {
-    value: "ALL",
-    label: "ALL"
-  },
-  {
-    value: "Id",
-    label: "Id"
-  },
-  {
-    value: "Title",
-    label: "Title"
-  },
-  {
-    value: "Author",
-    label: "Author"
-  },
-  {
-    value: "Publisher",
-    label: "Publisher"
-  }
-];
 
 export default class MultiFilterSearchWithInputTags extends React.Component {
   state = {
@@ -161,41 +156,49 @@ export default class MultiFilterSearchWithInputTags extends React.Component {
 
     return (
       <div className="App">
-        <MultiSelect
-          defaultSelected={this.state.selectedTags}
-          data={data}
-          onChangeSelection={this.onChangeTagSelection}
-          ref={this.tagSelectorRef}
-        />
-        <div className="flex" style={{ marginTop: "1rem" }}>
-          <InputContainerWrapper>
-            {legitSearchTags.map((tag, index) => {
-              return (
-                <TagInput
-                  onTagInputWidthChange={this.onTagInputWidthChange}
-                  tagInputWidthData={this.state.tagInputWidthData}
-                  tagInputWidth={this.getTagInputWidth(tag[KEY])}
-                  tagInputValue={this.getTagInputValue(tag[KEY])}
-                  onTagInputValueChange={this.onTagInputValueChange}
-                  tagSelectorRef={this.tagSelectorRef}
-                  nextTabbableRef={this.nextTabbableRef}
-                  dataTagLen={this.state.selectedTags.length}
-                  dataIndex={index}
-                  key={index}
-                  label={tag[KEY]}
-                  removeTag={this.removeTag}
-                />
-              );
-            })}
-          </InputContainerWrapper>
-          <FetchButton ref={this.nextTabbableRef} className="fetch-button">
-            Fetch
-          </FetchButton>
-        </div>
+        <label>
+          <LabelContainer>Search by:</LabelContainer>
+          <div className="flex" style={{ marginTop: "1rem" }}>
+            <MultiSelect
+              defaultSelected={this.state.selectedTags}
+              data={data}
+              onChangeSelection={this.onChangeTagSelection}
+              ref={this.tagSelectorRef}
+            />
+            <InputContainerWrapper>
+              {legitSearchTags.map((tag, index) => {
+                return (
+                  <TagInput
+                    onTagInputWidthChange={this.onTagInputWidthChange}
+                    tagInputWidthData={this.state.tagInputWidthData}
+                    tagInputWidth={this.getTagInputWidth(tag[KEY])}
+                    tagInputValue={this.getTagInputValue(tag[KEY])}
+                    onTagInputValueChange={this.onTagInputValueChange}
+                    tagSelectorRef={this.tagSelectorRef}
+                    nextTabbableRef={this.nextTabbableRef}
+                    dataTagLen={this.state.selectedTags.length}
+                    dataIndex={index}
+                    key={index}
+                    label={tag[KEY]}
+                    removeTag={this.removeTag}
+                  />
+                );
+              })}
+            </InputContainerWrapper>
+            <FetchButton ref={this.nextTabbableRef} className="fetch-button">
+              Search
+            </FetchButton>
+          </div>
+        </label>
       </div>
     );
   }
 }
+
+const LabelContainer = styled.span`
+  text-align: left;
+  display: block;
+`;
 
 const FetchButton = styled.button`
   border: 1px solid var(--color-active);

@@ -200,9 +200,9 @@ const MultiSelectWrapperDropdownBtn = styled.button`
   position: relative;
   border: 1px solid #ccc;
   border-radius: 3px;
-  width: 200px;
+  width: 150px;
   font-size: 12px;
-  height: 30px;
+  height: 38px;
   text-align: left;
   padding-left: 5px;
   cursor: pointer;
@@ -217,7 +217,7 @@ const MultiSelectWrapperDropdownBtn = styled.button`
 const DropDownIcon = styled.span`
   position: absolute;
   width: 30px;
-  height: 29px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -226,20 +226,22 @@ const DropDownIcon = styled.span`
 `;
 
 const MultiSelectWrapperDropdownlistWrapper = styled.div`
-  width: 200px;
+  width: 150px;
   position: relative;
   z-index: 1;
+  margin-right: 0.3rem;
 `;
 
 const MultiSelectWrapper = styled.ul`
   max-width: 320px;
   text-align: left;
-  border: 1px dashed #ccc;
+  border: 1px solid #ccc;
   list-style: none;
-  max-width: 200px;
+  max-width: 150px;
   width: 100%;
   background: white;
   position: absolute;
+  border-radius: 3px;
 
   &:focus {
     box-shadow: 0 0 4px var(--color-active-muted);
